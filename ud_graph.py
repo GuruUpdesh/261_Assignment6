@@ -144,10 +144,13 @@ class UndirectedGraph:
         if len(path) == 0:
             return True
 
+        if path[0] not in self.adj_list:
+            return False
+
         # look through the path ensuring that the paths order vertex to vertex is an edge in the graph
         for index in range(1, len(path)):
             # if the previous index does not have an edge to the next index return False
-            if path[index] not in self.adj_list[path[index - 1]]:
+            if path[index] not in self.adj_list[path[index - 1]] or path[index] not in self.adj_list:
                 return False
         return True
 
