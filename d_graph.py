@@ -83,7 +83,7 @@ class DirectedGraph:
         # or if the weight is not a positive integer the method does nothing
         if src == dst:
             return
-        if (0 > src or src > self.v_count - 1) or (0 > dst or dst > self.v_count):
+        if not (self.is_valid_index(src) and self.is_valid_index(dst)):
             return
         if weight < 0:
             return
@@ -91,6 +91,13 @@ class DirectedGraph:
         # if an edge already exists in the graph the method will update the weight of that edge otherwise
         # the method adds a new edge to the graph
         self.adj_matrix[src][dst] = weight
+
+    def is_valid_index(self, index) -> bool:
+        if index < 0:
+            return False
+        if self.v_count < index:
+            return False
+        return True
 
     def remove_edge(self, src: int, dst: int) -> None:
         """
