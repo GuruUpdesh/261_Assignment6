@@ -88,13 +88,6 @@ class DirectedGraph:
         # the method adds a new edge to the graph
         self.adj_matrix[src][dst] = weight
 
-    def is_valid_index(self, index) -> bool:
-        if index < 0:
-            return False
-        if self.v_count - 1 < index:
-            return False
-        return True
-
     def remove_edge(self, src: int, dst: int) -> None:
         """
         This method removes the edge between the two parameter vertices.
@@ -105,7 +98,6 @@ class DirectedGraph:
             return
 
         self.adj_matrix[src][dst] = 0
-
 
     def get_vertices(self) -> []:
         """
@@ -132,9 +124,28 @@ class DirectedGraph:
 
     def is_valid_path(self, path: []) -> bool:
         """
-        TODO: Write this implementation
+        This method takes a list of vertex indices and returns True if the given list of vertices is a valid path in
+        the graph. Meaning that one can travel from the first vertex to the last vertex at each step moving over and
+        edge in the graph). An empty path is considered valid.
         """
-        pass
+        # an empty path is considered valid
+        if not path:
+            return True
+
+        # for each vertice in the path
+        for i in range(1, len(path)):
+            cur = path[i - 1]
+            next = path[i]
+            # if the cur index is not in the graph return False since the path is not valid
+            if not 0 <= cur < self.v_count:
+                return False
+            # if there is not an edge from the current vertex to the next vertex in the graph return False
+            if self.adj_matrix[cur][next] == 0:
+                return False
+
+        # if we make it through the path in the list moving over and edge at each step return True
+        return True
+
 
     def dfs(self, v_start, v_end=None) -> []:
         """
