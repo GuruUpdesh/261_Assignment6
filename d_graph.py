@@ -101,7 +101,7 @@ class DirectedGraph:
         """
         # if the two provided index values are the same or if either or both vertex indices do not exist
         # or the edge doesnt exist the method does nothing
-        if src == dst or 0 > src > self.v_count - 1 or 0 > dst > self.v_count - 1 or weight < 0:
+        if src == dst or not (0 <= src < self.v_count and 0 <= dst < self.v_count):
             return
 
         self.adj_matrix[src][dst] = 0
