@@ -81,11 +81,7 @@ class DirectedGraph:
         """
         # if the two provided index values are the same or if either or both vertex indices do not exist
         # or if the weight is not a positive integer the method does nothing
-        if src == dst:
-            return
-        if not (self.is_valid_index(src) and self.is_valid_index(dst)):
-            return
-        if weight < 0:
+        if src == dst or not (0 < src < self.v_count and 0 < dst < self.v_count) or weight < 0:
             return
 
         # if an edge already exists in the graph the method will update the weight of that edge otherwise
@@ -95,7 +91,7 @@ class DirectedGraph:
     def is_valid_index(self, index) -> bool:
         if index < 0:
             return False
-        if self.v_count < index:
+        if self.v_count - 1 < index:
             return False
         return True
 
@@ -166,7 +162,6 @@ class DirectedGraph:
 
 
 if __name__ == '__main__':
-
     print("\nPDF - method add_vertex() / add_edge example 1")
     print("----------------------------------------------")
     g = DirectedGraph()
