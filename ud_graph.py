@@ -261,12 +261,38 @@ class UndirectedGraph:
 
         return count
 
-
-
     def has_cycle(self):
         """
         Return True if graph contains a cycle, False otherwise
         """
+        # for each vertex in  the graph
+        for vertex in self.adj_list:
+            # if the recursive helper function finds a cycle return True
+            if self.rec_helper(vertex, None, set()) is True:
+                return True
+
+        # if we get through all the vertices and haven't found a single cycle return False
+        return False
+
+    def rec_helper(self, current, parent, visited):
+        """
+        Returns true if the graph passed to the method has a cycle. Otherwise return False.
+        """
+        visited.add(current)    # add the current vertex to the visited vertices set
+
+        # for all the current vertex's successors if the vertex has not been visited check to see if it has a cycle
+        for vertex in self.adj_list[current]:
+            # if the vertex has been visited and is not the parent vertex then we return True since we have found
+            # a cycle
+            if vertex in visited and vertex != parent:
+                return True
+            # otherwise if vertex has not been visited check to see if it has a cycle
+            if vertex not in visited:
+                # if its does have a cycle return True
+                if self.rec_helper(vertex, current, visited): return True
+
+        # otherwise return False
+        return False
 
 
 if __name__ == '__main__':
@@ -345,18 +371,18 @@ if __name__ == '__main__':
     print()
     #
     #
-    # print("\nPDF - method has_cycle() example 1")
-    # print("----------------------------------")
-    # edges = ['AE', 'AC', 'BE', 'CE', 'CD', 'CB', 'BD', 'ED', 'BH', 'QG', 'FG']
-    # g = UndirectedGraph(edges)
-    # test_cases = (
-    #     'add QH', 'remove FG', 'remove GQ', 'remove HQ',
-    #     'remove AE', 'remove CA', 'remove EB', 'remove CE', 'remove DE',
-    #     'remove BC', 'add EA', 'add EF', 'add GQ', 'add AC', 'add DQ',
-    #     'add EG', 'add QH', 'remove CD', 'remove BD', 'remove QG',
-    #     'add FG', 'remove GE')
-    # for case in test_cases:
-    #     command, edge = case.split()
-    #     u, v = edge
-    #     g.add_edge(u, v) if command == 'add' else g.remove_edge(u, v)
-    #     print('{:<10}'.format(case), g.has_cycle())
+    print("\nPDF - method has_cycle() example 1")
+    print("----------------------------------")
+    edges = ['AE', 'AC', 'BE', 'CE', 'CD', 'CB', 'BD', 'ED', 'BH', 'QG', 'FG']
+    g = UndirectedGraph(edges)
+    test_cases = (
+        'add QH', 'remove FG', 'remove GQ', 'remove HQ',
+        'remove AE', 'remove CA', 'remove EB', 'remove CE', 'remove DE',
+        'remove BC', 'add EA', 'add EF', 'add GQ', 'add AC', 'add DQ',
+        'add EG', 'add QH', 'remove CD', 'remove BD', 'remove QG',
+        'add FG', 'remove GE')
+    for case in test_cases:
+        command, edge = case.split()
+        u, v = edge
+        g.add_edge(u, v) if command == 'add' else g.remove_edge(u, v)
+        print('{:<10}'.format(case), g.has_cycle())
