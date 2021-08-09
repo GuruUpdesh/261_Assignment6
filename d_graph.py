@@ -3,7 +3,7 @@
 # Assignment: 6
 # Description: Implementation of a direction graph class and its methods.
 
-import heapq
+from collections import deque
 
 class DirectedGraph:
     """
@@ -149,15 +149,62 @@ class DirectedGraph:
 
     def dfs(self, v_start, v_end=None) -> []:
         """
-        TODO: Write this implementation
+        Return list of vertices visited during DFS search
+        Vertices are picked in ascending order when presented with multiple options.
         """
-        pass
+        visited_vertices = []  # Initialize an empty list of visited vertices
+        stack = deque()  # Initialize an empty stack
+
+        # if the starting vertex is in the graph add it to the stack
+        if 0 <= v_start < self.v_count:
+            stack.append(v_start)
+        # if the stack is not empty, pop a vertex
+        while len(stack) > 0:
+            vertex = stack.pop()
+
+            # if the vertex is not in the list of visited vertices
+            if vertex not in visited_vertices:
+                visited_vertices.append(vertex)  # add the vertex to the list of visited vertices
+
+                # if the vertex popped is the end vertex break
+                if vertex == v_end:
+                    break
+
+                # push each vertex that is a direct successor of the current vertex to the stack
+                for i in range(self.v_count-1, -1, -1):
+                    if self.adj_matrix[vertex][i] != 0:
+                        stack.append(i)
+        return visited_vertices
 
     def bfs(self, v_start, v_end=None) -> []:
         """
-        TODO: Write this implementation
+        Return list of vertices visited during BFS search
+        Vertices are picked in alphabetical order
         """
-        pass
+        visited_vertices = []  # Initialize an empty list of visited vertices
+        queue = deque()  # Initialize an empty queue
+
+        # if the starting vertex is in the graph add it to the queue
+        if 0 <= v_start < self.v_count:
+            queue.append(v_start)
+
+        # if the queue is not empty, dequeue a vertex
+        while len(queue) > 0:
+            vertex = queue.popleft()
+
+            # if the vertex is not in the list of visited vertices
+            if vertex not in visited_vertices:
+                visited_vertices.append(vertex)  # add the vertex to the list of visited vertices
+
+                # if the vertex dequeued is the end vertex break
+                if vertex == v_end:
+                    break
+
+                # enqueue each vertex that is a direct successor of the current vertex to the queue
+                for i in range(self.v_count):
+                    if self.adj_matrix[vertex][i] != 0:
+                        queue.append(i)
+        return visited_vertices
 
     def has_cycle(self):
         """
@@ -214,14 +261,14 @@ if __name__ == '__main__':
     for path in test_cases:
         print(path, g.is_valid_path(path))
     #
-    #
-    # print("\nPDF - method dfs() and bfs() example 1")
-    # print("--------------------------------------")
-    # edges = [(0, 1, 10), (4, 0, 12), (1, 4, 15), (4, 3, 3),
-    #          (3, 1, 5), (2, 1, 23), (3, 2, 7)]
-    # g = DirectedGraph(edges)
-    # for start in range(5):
-    #     print(f'{start} DFS:{g.dfs(start)} BFS:{g.bfs(start)}')
+
+    print("\nPDF - method dfs() and bfs() example 1")
+    print("--------------------------------------")
+    edges = [(0, 1, 10), (4, 0, 12), (1, 4, 15), (4, 3, 3),
+             (3, 1, 5), (2, 1, 23), (3, 2, 7)]
+    g = DirectedGraph(edges)
+    for start in range(5):
+        print(f'{start} DFS:{g.dfs(start)} BFS:{g.bfs(start)}')
     #
     #
     # print("\nPDF - method has_cycle() example 1")
