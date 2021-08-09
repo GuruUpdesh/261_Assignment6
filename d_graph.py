@@ -81,7 +81,7 @@ class DirectedGraph:
         """
         # if the two provided index values are the same or if either or both vertex indices do not exist
         # or if the weight is not a positive integer the method does nothing
-        if src == dst or not (0 < src < self.v_count and 0 < dst < self.v_count) or weight < 0:
+        if src == dst or (not (0 < src < self.v_count and 0 < dst < self.v_count)) or weight < 0:
             return
 
         # if an edge already exists in the graph the method will update the weight of that edge otherwise
