@@ -3,7 +3,6 @@
 # Assignment: 6
 # Description: Implementation of an undirected graph class.
 
-import heapq
 from collections import deque
 
 
