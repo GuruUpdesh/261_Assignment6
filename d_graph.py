@@ -281,10 +281,10 @@ class DirectedGraph:
 
         min_distance_list = []
         for i in range(self.v_count):
-            if i not in visited_vertices:
-                min_distance_list.append(float('inf'))
-            else:
+            if i in visited_vertices and i is not src:
                 min_distance_list.append(visited_vertices[i])
+            elif i is not src:
+                min_distance_list.append(float('inf'))
 
         return min_distance_list
 
