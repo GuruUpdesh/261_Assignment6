@@ -193,18 +193,52 @@ class DirectedGraph:
 
     def has_cycle(self):
         """
-        This method returns True if there is at least one cycle in the graph and False if there is not cycle in the
-        graph.
+        This method returns True if there is at least one cycle in the graph. If the graph is acyclic,
+        the method returns False.
         """
+        not_visited = [i for i in range(self.v_count)]  # Each index in the graph is has not been visited
+        stack = []  # initialize an empty stack
+        visited = []    # no vertices have been visited thus this list is empty
+
+        # check to see if there are two vertices in the graph that point to each other
         if self.directed_edges():
             return True
 
-        visited = []
-        for i in range(self.v_count):
-            if i not in visited:
-                visited = self.bfs_revisit(i)
-        print(visited)
+        while not_visited:
+            # for each vertex in the graph if the recursive helper function finds a cycle return True
+            for i in range(self.v_count):
+                if i in not_visited:
+                    # Check to see if cycle exists with help function
+                    if self.has_cycle_helper(i, visited, not_visited, stack):
+                        return True
 
+        # if we get through all the vertices and haven't found a single cycle return False
+        return False
+
+    def has_cycle_helper(self, vertex, visited, unvisited, stack):
+        """
+        This method takes a vertex, a list of visited vertices and unvisited vertices, and a stack and returns True
+        if the sub_graph with the :param vertex has a cycle. The method returns False otherwise.
+        """
+        unvisited.remove(vertex)    # remove the current vertex from the unvisited list since we have visited it now
+        stack.append(vertex)     # add the current vertex to the stack
+
+        # for each vertex in the graph
+        for i in range(self.v_count):
+            # if the edge exists between that vertex and the current vertex
+            if self.adj_matrix[vertex][i] != 0:
+                # if the vertex we are looking at has not been visited and is in the stack return True
+                if i not in visited and i in stack:
+                    return True
+                # if the vertex we are looking at has not been visited and the recursive call on that vertex is true
+                # return True
+                if i not in visited and self.has_cycle_helper(i, visited, unvisited, stack):
+                    return True
+
+        stack.remove(vertex)    # remove the current vertex from the stack
+        visited.append(vertex)  # we have now visited this vertex so add it to the visited list
+
+        # if we get this far return false
         return False
 
     def directed_edges(self):
@@ -221,35 +255,6 @@ class DirectedGraph:
 
         # otherwise return False
         return False
-
-    def bfs_revisit(self, start_vertex):
-        visited = []  # Initialize an empty list of visited vertices
-        queue = deque()  # Initialize an empty queue
-        # if the starting vertex is in the graph add it to the queue
-        if 0 <= start_vertex < self.v_count:
-            queue.append(start_vertex)
-            visited.append((start_vertex, None))
-        # if the queue is not empty, dequeue a vertex
-        while len(queue) > 0:
-            vertex = queue.popleft()
-            # if the vertex is not in the list of visited vertices
-            visited_vertecies = [i[1] for i in visited]
-            if vertex not in visited_vertecies:
-                children = self.get_direction_direct_successor(vertex)
-                for i in children:
-                    queue.append(i)
-            for i in children:
-                # add the vertex to the list of visited vertices
-                if vertex not in self.get_direction_direct_successor(i):
-                    visited.append(i)
-        return visited
-
-    def get_direction_direct_successor(self, vertex):
-        children = set()
-        for i in range(self.v_count):
-            if self.adj_matrix[vertex][i] != 0:
-                children.add(i)
-        return children
 
     def dijkstra(self, src: int) -> []:
         """
@@ -346,22 +351,22 @@ if __name__ == '__main__':
         print(f'{start} DFS:{g.dfs(start)} BFS:{g.bfs(start)}')
     # #
     # #
-    # print("\nPDF - method has_cycle() example 1")
-    # print("----------------------------------")
-    # edges = [(0, 1, 10), (4, 0, 12), (1, 4, 15), (4, 3, 3),
-    #          (3, 1, 5), (2, 1, 23), (3, 2, 7)]
-    # g = DirectedGraph(edges)
-    #
-    # edges_to_remove = [(3, 1), (4, 0), (3, 2)]
-    # for src, dst in edges_to_remove:
-    #     g.remove_edge(src, dst)
-    #     print(g.get_edges(), g.has_cycle(), sep='\n')
-    #
-    # edges_to_add = [(4, 3), (2, 3), (1, 3), (4, 0)]
-    # for src, dst in edges_to_add:
-    #     g.add_edge(src, dst)
-    #     print(g.get_edges(), g.has_cycle(), sep='\n')
-    # print('\n', g)
+    print("\nPDF - method has_cycle() example 1")
+    print("----------------------------------")
+    edges = [(0, 1, 10), (4, 0, 12), (1, 4, 15), (4, 3, 3),
+             (3, 1, 5), (2, 1, 23), (3, 2, 7)]
+    g = DirectedGraph(edges)
+
+    edges_to_remove = [(3, 1), (4, 0), (3, 2)]
+    for src, dst in edges_to_remove:
+        g.remove_edge(src, dst)
+        print(g.get_edges(), g.has_cycle(), sep='\n')
+
+    edges_to_add = [(4, 3), (2, 3), (1, 3), (4, 0)]
+    for src, dst in edges_to_add:
+        g.add_edge(src, dst)
+        print(g.get_edges(), g.has_cycle(), sep='\n')
+    print('\n', g)
 
     #
     # print("\nPDF - dijkstra() example 1")
