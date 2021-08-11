@@ -268,22 +268,22 @@ class DirectedGraph:
         # Initialize an empty priority queue, and insert vs into it with distance (priority) 0.
         priority_queue = []
         heapq.heapify(priority_queue)
-        heapq.heappush(priority_queue, (src, 0))
+        heapq.heappush(priority_queue, (0, src))
 
         # While the priority queue is not empty:
         while len(priority_queue) > 0:
-            vertex, distance = heapq.heappop(priority_queue)
+            distance, vertex = heapq.heappop(priority_queue)
             if vertex not in visited_vertices:
                 visited_vertices[vertex] = distance
                 for i in range(self.v_count):
                     if self.adj_matrix[vertex][i] != 0:
-                        heapq.heappush(priority_queue, (i, distance + self.adj_matrix[vertex][i]))
+                        heapq.heappush(priority_queue, (distance + self.adj_matrix[vertex][i], i))
 
         min_distance_list = []
         for i in range(self.v_count):
-            if i in visited_vertices and i is not src:
+            if i in visited_vertices:
                 min_distance_list.append(visited_vertices[i])
-            elif i is not src:
+            else:
                 min_distance_list.append(float('inf'))
 
         return min_distance_list
