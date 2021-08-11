@@ -215,14 +215,11 @@ class DirectedGraph:
         if self.directed_edges():
             return True
 
-        visited_vertices = self.bfs_revisit(0)
-        visited_vertices.sort()
-        print(visited_vertices)
-        for i in range(1, len(visited_vertices)):
-            prev = visited_vertices[i - 1]
-            cur = visited_vertices[i]
-            if prev == cur:
-                return True
+        visited = []
+        for i in range(self.v_count):
+            if i not in visited:
+                visited = self.bfs_revisit(i)
+        print(visited)
 
         return False
 
@@ -241,26 +238,41 @@ class DirectedGraph:
         # otherwise return False
         return False
 
-    def bfs_revisit(self, v_start):
+    def bfs_revisit(self, start_vertex):
         visited = []  # Initialize an empty list of visited vertices
         queue = deque()  # Initialize an empty queue
         # if the starting vertex is in the graph add it to the queue
-        if 0 <= v_start < self.v_count:
-            queue.append(v_start)
+        if 0 <= start_vertex < self.v_count:
+            queue.append(start_vertex)
+            visited.append((start_vertex, None))
         # if the queue is not empty, dequeue a vertex
         while len(queue) > 0:
             vertex = queue.popleft()
             # if the vertex is not in the list of visited vertices
-            if vertex not in visited:
-                for i in range(self.v_count):
-                    if self.adj_matrix[vertex][i] != 0:
-                        queue.append(i)
-            visited.append(vertex)  # add the vertex to the list of visited vertices
+            visited_vertecies = [i[1] for i in visited]
+            if vertex not in visited_vertecies:
+                children = self.get_direction_direct_successor(vertex)
+                for i in children:
+                    queue.append(i)
+            for i in children:
+                # add the vertex to the list of visited vertices
+                if vertex not in self.get_direction_direct_successor(i):
+                    visited.append(i)
         return visited
+
+    def get_direction_direct_successor(self, vertex):
+        children = set()
+        for i in range(self.v_count):
+            if self.adj_matrix[vertex][i] != 0:
+                children.add(i)
+        return children
 
     def dijkstra(self, src: int) -> []:
         """
-        TODO: Write this implementation
+        This method implements Dijkstra's algorithm to compute the length of the shortest path from the given parameter
+        vertex src to all the other vertices in the graph. It returns a list where the first element is the distance
+        between :param src to vertex 0. If a vertex is not reachable its corresponding element in the return list
+        will be infinity.
         """
         # Initialize an empty map/hash table representing visited vertices
         visited_vertices = {}   # Key is the vertex v. Value is the min distance d to vertex v.
@@ -272,24 +284,30 @@ class DirectedGraph:
 
         # While the priority queue is not empty:
         while len(priority_queue) > 0:
+            # Remove the min element in the priority queue
             distance, vertex = heapq.heappop(priority_queue)
+
+            # if the vertex has not been visited
             if vertex not in visited_vertices:
-                visited_vertices[vertex] = distance
+                visited_vertices[vertex] = distance     # Add v to the visited map
+
+                # For each direct successor i of vertex:
                 for i in range(self.v_count):
                     if self.adj_matrix[vertex][i] != 0:
+                        # insert i into the priority queue
                         heapq.heappush(priority_queue, (distance + self.adj_matrix[vertex][i], i))
 
+        # now we must create the return list
         min_distance_list = []
         for i in range(self.v_count):
+            # if the index has been visited get the distance and append that
             if i in visited_vertices:
                 min_distance_list.append(visited_vertices[i])
+            # otherwise the index cannot be visited from the given start index and thus the distance is infinity
             else:
                 min_distance_list.append(float('inf'))
 
         return min_distance_list
-
-
-
 
 
 if __name__ == '__main__':
@@ -344,35 +362,35 @@ if __name__ == '__main__':
     #     print(f'{start} DFS:{g.dfs(start)} BFS:{g.bfs(start)}')
     # #
     # #
-    # print("\nPDF - method has_cycle() example 1")
-    # print("----------------------------------")
-    # edges = [(0, 1, 10), (4, 0, 12), (1, 4, 15), (4, 3, 3),
-    #          (3, 1, 5), (2, 1, 23), (3, 2, 7)]
-    # g = DirectedGraph(edges)
-    #
-    # edges_to_remove = [(3, 1), (4, 0), (3, 2)]
-    # for src, dst in edges_to_remove:
-    #     g.remove_edge(src, dst)
-    #     print(g.get_edges(), g.has_cycle(), sep='\n')
-    #
-    # edges_to_add = [(4, 3), (2, 3), (1, 3), (4, 0)]
-    # for src, dst in edges_to_add:
-    #     g.add_edge(src, dst)
-    #     print(g.get_edges(), g.has_cycle(), sep='\n')
-    # print('\n', g)
-
-    #
-    print("\nPDF - dijkstra() example 1")
-    print("--------------------------")
+    print("\nPDF - method has_cycle() example 1")
+    print("----------------------------------")
     edges = [(0, 1, 10), (4, 0, 12), (1, 4, 15), (4, 3, 3),
              (3, 1, 5), (2, 1, 23), (3, 2, 7)]
     g = DirectedGraph(edges)
-    for i in range(5):
-        print(f'DIJKSTRA {i} {g.dijkstra(i)}')
-    g.remove_edge(4, 3)
+
+    edges_to_remove = [(3, 1), (4, 0), (3, 2)]
+    for src, dst in edges_to_remove:
+        g.remove_edge(src, dst)
+        print(g.get_edges(), g.has_cycle(), sep='\n')
+
+    edges_to_add = [(4, 3), (2, 3), (1, 3), (4, 0)]
+    for src, dst in edges_to_add:
+        g.add_edge(src, dst)
+        print(g.get_edges(), g.has_cycle(), sep='\n')
     print('\n', g)
-    for i in range(5):
-        print(f'DIJKSTRA {i} {g.dijkstra(i)}')
+
+    #
+    # print("\nPDF - dijkstra() example 1")
+    # print("--------------------------")
+    # edges = [(0, 1, 10), (4, 0, 12), (1, 4, 15), (4, 3, 3),
+    #          (3, 1, 5), (2, 1, 23), (3, 2, 7)]
+    # g = DirectedGraph(edges)
+    # for i in range(5):
+    #     print(f'DIJKSTRA {i} {g.dijkstra(i)}')
+    # g.remove_edge(4, 3)
+    # print('\n', g)
+    # for i in range(5):
+    #     print(f'DIJKSTRA {i} {g.dijkstra(i)}')
 
     # print("\n Personal examples for has_cycle")
     # print("--------------------------")

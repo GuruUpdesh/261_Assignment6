@@ -47,9 +47,7 @@ class UndirectedGraph:
         Add new vertex to the graph
         """
         # if a vertex with the same name as the parameter string already exists in the graph the method will do nothing
-        if v in self.adj_list:
-            return
-
+        if v in self.adj_list: return
         # otherwise add the value to the adjacency list
         self.adj_list[v] = []
         
@@ -58,21 +56,16 @@ class UndirectedGraph:
         Add edge to the graph
         """
         # if u and v refer to the same vertex the method does nothing
-        if u == v:
-            return
+        if u == v: return
 
         # if either or both vertex names do not exist in the graph create them
         if not (u in self.adj_list and v in self.adj_list):
-            # if u is not in the graph then create it
-            if u not in self.adj_list:
-                self.add_vertex(u)
-            # if v is not in the graph then create it
-            if v not in self.adj_list:
-                self.add_vertex(v)
-
-        # if an edge already exists in the graph the method does nothing (we only check for this
-        elif v in self.adj_list[u] and u in self.adj_list[v]:
-            return
+            # if u is not in the graph then create it and if v is not in the graph then create it
+            for vertex in (u, v):
+                if vertex not in self.adj_list:
+                    self.add_vertex(vertex)
+        # if an edge already exists in the graph the method does nothing
+        elif v in self.adj_list[u] and u in self.adj_list[v]: return
 
         # otherwise update the list of vertices connected to the key (either u or v)
         self.adj_list[v].append(u)
@@ -83,12 +76,9 @@ class UndirectedGraph:
         Remove edge from the graph
         """
         # if u or/and v do not exist in the graph the method does nothing
-        if v not in self.adj_list or u not in self.adj_list:
-            return
+        if v not in self.adj_list or u not in self.adj_list: return
         # if there is no edge between u and v the method doesnt does nothing
-        if not (v in self.adj_list[u] and u in self.adj_list[v]):
-            return
-
+        if not (v in self.adj_list[u] and u in self.adj_list[v]): return
         # otherwise remove the edge between the two parameter vertices (u and v)
         self.adj_list[v].remove(u)
         self.adj_list[u].remove(v)
@@ -98,12 +88,10 @@ class UndirectedGraph:
         Remove vertex and all connected edges
         """
         # if the given vertex does not exist the method does nothing
-        if v not in self.adj_list:
-            return
-
+        if v not in self.adj_list: return
+        # remove any reference of the parameter vertex from the adj list
         for successor in self.adj_list[v]:
             self.adj_list[successor].remove(v)
-
         self.adj_list.pop(v)
 
     def get_vertices(self) -> []:
@@ -111,7 +99,6 @@ class UndirectedGraph:
         Return list of vertices in the graph (any order)
         """
         vertices_list = []
-
         # for every vertex in the adjacency list add it to the return list
         for i in self.adj_list:
             vertices_list.append(i)
@@ -158,7 +145,7 @@ class UndirectedGraph:
         Vertices are picked in alphabetical order
         """
         visited_vertices = []   # Initialize an empty list of visited vertices
-        stack = deque() # Initialize an empty stack
+        stack = deque()     # Initialize an empty stack
 
         # if the starting vertex is in the graph add it to the stack
         if v_start in self.adj_list:
@@ -177,14 +164,7 @@ class UndirectedGraph:
                     break
 
                 # push each vertex that is a direct successor of the current vertex to the stack
-
-                # to get a list of vertices to add to the stack sort the list adjacency list for the vertex
-                successors = self.adj_list[vertex]
-                successors.sort()
-                # reverse the order of the list so that when we continue the search the stack will pop the vertices
-                # in ascending lexicographical order
-                successors.reverse()
-                for successor in successors:
+                for successor in reversed(sorted(self.adj_list[vertex])):
                     stack.append(successor)
 
         return visited_vertices
@@ -214,11 +194,7 @@ class UndirectedGraph:
                     break
 
                 # enqueue each vertex that is a direct successor of the current vertex to the queue
-
-                # to get a list of vertices to add to the queue sort the list adjacency list for the vertex
-                successors = self.adj_list[vertex]
-                successors.sort()
-                for successor in successors:
+                for successor in sorted(self.adj_list[vertex]):
                     # if the vertex is not already visited enqueue it to the queue
                     if successor not in visited_vertices:
                         queue.append(successor)
@@ -230,7 +206,7 @@ class UndirectedGraph:
         Return number of connected components in the graph
         """
         count = 0   # initialize count to zero
-        visited_vertices = set()   # keep a list of visited vertices
+        visited_vertices = set()   # keep a set of visited vertices
         stack = deque()     # initialize an empty stack
 
         # if the number of nodes is greater than zero
@@ -243,20 +219,18 @@ class UndirectedGraph:
             pop = stack.pop()  # pop the value in the stack
             dfs = self.dfs(pop)     # get a list of all the connected vertices
 
-            # for each vertices in this connected component add it to the visited vertices set
+            # for each vertex in this connected component add it to the visited vertices set
             for vertex in dfs:
                 visited_vertices.add(vertex)
 
             # for each vertex in the graph
             for vertex in self.adj_list:
-                # if the vertex has not yet been visited
+                # if the vertex has not yet been visited append it to the stack
                 if vertex not in visited_vertices:
-                    # append it to the stack
                     stack.append(vertex)
                     break
 
-            # increment count since we just discovered a connected component in the graph
-            count += 1
+            count += 1   # increment count since we just discovered a connected component in the graph
 
         return count
 
@@ -264,9 +238,8 @@ class UndirectedGraph:
         """
         Return True if graph contains a cycle, False otherwise
         """
-        # for each vertex in  the graph
+        # for each vertex in the graph if the recursive helper function finds a cycle return True
         for vertex in self.adj_list:
-            # if the recursive helper function finds a cycle return True
             if self.rec_helper(vertex, None, set()) is True:
                 return True
 
@@ -296,48 +269,48 @@ class UndirectedGraph:
 
 if __name__ == '__main__':
 
-    # print("\nPDF - method add_vertex() / add_edge example 1")
-    # print("----------------------------------------------")
-    # g = UndirectedGraph()
-    # print(g)
+    print("\nPDF - method add_vertex() / add_edge example 1")
+    print("----------------------------------------------")
+    g = UndirectedGraph()
+    print(g)
+
+    for v in 'ABCDE':
+        g.add_vertex(v)
+    print(g)
+
+    g.add_vertex('A')
+    print(g)
+
+    for u, v in ['AB', 'AC', 'BC', 'BD', 'CD', 'CE', 'DE', ('B', 'C')]:
+        g.add_edge(u, v)
+    print(g)
+
+
+    print("\nPDF - method remove_edge() / remove_vertex example 1")
+    print("----------------------------------------------------")
+    g = UndirectedGraph(['AB', 'AC', 'BC', 'BD', 'CD', 'CE', 'DE'])
+    g.remove_vertex('DOES NOT EXIST')
+    g.remove_edge('A', 'B')
+    g.remove_edge('X', 'B')
+    print(g)
+    g.remove_vertex('D')
+    print(g)
     #
-    # for v in 'ABCDE':
-    #     g.add_vertex(v)
-    # print(g)
     #
-    # g.add_vertex('A')
-    # print(g)
+    print("\nPDF - method get_vertices() / get_edges() example 1")
+    print("---------------------------------------------------")
+    g = UndirectedGraph()
+    print(g.get_edges(), g.get_vertices(), sep='\n')
+    g = UndirectedGraph(['AB', 'AC', 'BC', 'BD', 'CD', 'CE'])
+    print(g.get_edges(), g.get_vertices(), sep='\n')
+
     #
-    # for u, v in ['AB', 'AC', 'BC', 'BD', 'CD', 'CE', 'DE', ('B', 'C')]:
-    #     g.add_edge(u, v)
-    # print(g)
-    #
-    #
-    # print("\nPDF - method remove_edge() / remove_vertex example 1")
-    # print("----------------------------------------------------")
-    # g = UndirectedGraph(['AB', 'AC', 'BC', 'BD', 'CD', 'CE', 'DE'])
-    # g.remove_vertex('DOES NOT EXIST')
-    # g.remove_edge('A', 'B')
-    # g.remove_edge('X', 'B')
-    # print(g)
-    # g.remove_vertex('D')
-    # print(g)
-    # #
-    # #
-    # print("\nPDF - method get_vertices() / get_edges() example 1")
-    # print("---------------------------------------------------")
-    # g = UndirectedGraph()
-    # print(g.get_edges(), g.get_vertices(), sep='\n')
-    # g = UndirectedGraph(['AB', 'AC', 'BC', 'BD', 'CD', 'CE'])
-    # print(g.get_edges(), g.get_vertices(), sep='\n')
-    #
-    # #
-    # print("\nPDF - method is_valid_path() example 1")
-    # print("--------------------------------------")
-    # g = UndirectedGraph(['AB', 'AC', 'BC', 'BD', 'CD', 'CE', 'DE'])
-    # test_cases = ['ABC', 'ADE', 'ECABDCBE', 'ACDECB', '', 'D', 'Z']
-    # for path in test_cases:
-    #     print(list(path), g.is_valid_path(list(path)))
+    print("\nPDF - method is_valid_path() example 1")
+    print("--------------------------------------")
+    g = UndirectedGraph(['AB', 'AC', 'BC', 'BD', 'CD', 'CE', 'DE'])
+    test_cases = ['ABC', 'ADE', 'ECABDCBE', 'ACDECB', '', 'D', 'Z']
+    for path in test_cases:
+        print(list(path), g.is_valid_path(list(path)))
 
 
     print("\nPDF - method dfs() and bfs() example 1")
