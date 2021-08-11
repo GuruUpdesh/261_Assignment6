@@ -196,31 +196,30 @@ class DirectedGraph:
         This method returns True if there is at least one cycle in the graph. If the graph is acyclic,
         the method returns False.
         """
-        not_visited = [i for i in range(self.v_count)]  # Each index in the graph is has not been visited
         stack = []  # initialize an empty stack
         visited = []    # no vertices have been visited thus this list is empty
 
         # check to see if there are two vertices in the graph that point to each other
-        if self.directed_edges():
-            return True
+        # if self.directed_edges():
+        #     return True
 
-        while not_visited:
+        while len(visited) <= self.v_count:
             # for each vertex in the graph if the recursive helper function finds a cycle return True
             for i in range(self.v_count):
-                if i in not_visited:
+                if i not in visited:
                     # Check to see if cycle exists with help function
-                    if self.has_cycle_helper(i, visited, not_visited, stack):
+                    if self.has_cycle_helper(i, visited, stack):
                         return True
+            break
 
         # if we get through all the vertices and haven't found a single cycle return False
         return False
 
-    def has_cycle_helper(self, vertex, visited, unvisited, stack):
+    def has_cycle_helper(self, vertex, visited, stack):
         """
         This method takes a vertex, a list of visited vertices and unvisited vertices, and a stack and returns True
         if the sub_graph with the :param vertex has a cycle. The method returns False otherwise.
         """
-        unvisited.remove(vertex)    # remove the current vertex from the unvisited list since we have visited it now
         stack.append(vertex)     # add the current vertex to the stack
 
         # for each vertex in the graph
@@ -232,7 +231,7 @@ class DirectedGraph:
                     return True
                 # if the vertex we are looking at has not been visited and the recursive call on that vertex is true
                 # return True
-                if i not in visited and self.has_cycle_helper(i, visited, unvisited, stack):
+                if i not in visited and self.has_cycle_helper(i, visited, stack):
                     return True
 
         stack.remove(vertex)    # remove the current vertex from the stack
