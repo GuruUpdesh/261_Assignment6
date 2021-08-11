@@ -240,13 +240,13 @@ class UndirectedGraph:
         """
         # for each vertex in the graph if the recursive helper function finds a cycle return True
         for vertex in self.adj_list:
-            if self.rec_helper(vertex, None, set()) is True:
+            if self.rec_helper_find_cycle(vertex, None, set()) is True:
                 return True
 
         # if we get through all the vertices and haven't found a single cycle return False
         return False
 
-    def rec_helper(self, current, parent, visited):
+    def rec_helper_find_cycle(self, current, parent, visited):
         """
         Returns true if the graph passed to the method has a cycle. Otherwise return False.
         """
@@ -261,7 +261,7 @@ class UndirectedGraph:
             # otherwise if vertex has not been visited check to see if it has a cycle
             if vertex not in visited:
                 # if its does have a cycle return True
-                if self.rec_helper(vertex, current, visited): return True
+                if self.rec_helper_find_cycle(vertex, current, visited): return True
 
         # otherwise return False
         return False
