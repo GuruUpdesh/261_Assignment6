@@ -89,7 +89,8 @@ class UndirectedGraph:
         if v not in self.adj_list: return
         # remove any reference of the parameter vertex from the adj list
         for successor in self.adj_list[v]:
-            self.remove_edge(successor, v)
+            if successor in self.adj_list:
+                self.adj_list[successor].remove(v)
         self.adj_list.pop(v)
 
     def get_vertices(self) -> []:
