@@ -199,18 +199,13 @@ class DirectedGraph:
         stack = []  # initialize an empty stack
         visited = []    # no vertices have been visited thus this list is empty
 
-        # check to see if there are two vertices in the graph that point to each other
-        # if self.directed_edges():
-        #     return True
-
-        while len(visited) <= self.v_count:
-            # for each vertex in the graph if the recursive helper function finds a cycle return True
-            for i in range(self.v_count):
-                if i not in visited:
-                    # Check to see if cycle exists with help function
-                    if self.has_cycle_helper(i, visited, stack):
-                        return True
-            break
+        # iterate through all the vertices in the graph
+        for vertex in range(self.v_count):
+            # if the vertex has yet to be visited
+            if vertex not in visited:
+                # Check to see if a cycle exists with helper function
+                if self.has_cycle_helper(vertex, visited, stack):
+                    return True
 
         # if we get through all the vertices and haven't found a single cycle return False
         return False
@@ -221,38 +216,22 @@ class DirectedGraph:
         if the sub_graph with the :param vertex has a cycle. The method returns False otherwise.
         """
         stack.append(vertex)     # add the current vertex to the stack
-
         # for each vertex in the graph
-        for i in range(self.v_count):
+        for vertex_i in range(self.v_count):
             # if the edge exists between that vertex and the current vertex
-            if self.adj_matrix[vertex][i] != 0:
+            if self.adj_matrix[vertex][vertex_i] != 0:
                 # if the vertex we are looking at has not been visited and is in the stack return True
-                if i not in visited and i in stack:
+                if vertex_i not in visited and vertex_i in stack:
                     return True
                 # if the vertex we are looking at has not been visited and the recursive call on that vertex is true
                 # return True
-                if i not in visited and self.has_cycle_helper(i, visited, stack):
+                if vertex_i not in visited and self.has_cycle_helper(vertex_i, visited, stack):
                     return True
 
         stack.remove(vertex)    # remove the current vertex from the stack
         visited.append(vertex)  # we have now visited this vertex so add it to the visited list
 
         # if we get this far return false
-        return False
-
-    def directed_edges(self):
-        """
-        This method returns True if there are two vertices that are pointer to each other in the directed graph and
-        False otherwise.
-        """
-        edges = self.get_edges()    # get all the edges in the graph
-        # for each edge in the graph
-        for i in edges:
-            # if the edge also exists in the opposite direction return True
-            if self.adj_matrix[i[1]][i[0]] != 0:
-                return True
-
-        # otherwise return False
         return False
 
     def dijkstra(self, src: int) -> []:
@@ -277,7 +256,7 @@ class DirectedGraph:
 
             # if the vertex has not been visited
             if vertex not in visited_vertices:
-                visited_vertices[vertex] = distance     # Add v to the visited map
+                visited_vertices[vertex] = distance     # Add vertex to the visited map
 
                 # For each direct successor i of vertex:
                 for i in range(self.v_count):
@@ -288,11 +267,9 @@ class DirectedGraph:
         # now we must create the return list
         min_distance_list = []
         for i in range(self.v_count):
-            # if the index has been visited get the distance and append that
-            if i in visited_vertices:
+            if i in visited_vertices:   # if the index has been visited get the distance and append that
                 min_distance_list.append(visited_vertices[i])
-            # otherwise the index cannot be visited from the given start index and thus the distance is infinity
-            else:
+            else:   # otherwise the index cannot be visited from the given start index and thus the distance is infinity
                 min_distance_list.append(float('inf'))
 
         return min_distance_list
