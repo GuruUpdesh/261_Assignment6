@@ -196,7 +196,7 @@ class DirectedGraph:
         This method returns True if there is at least one cycle in the graph. If the graph is acyclic,
         the method returns False.
         """
-        stack = []  # initialize an empty stack
+        stack = []  # initialize an empty stack this stack represents the recursion stack
         visited = []    # no vertices have been visited thus this list is empty
 
         # iterate through all the vertices in the graph
