@@ -67,7 +67,7 @@ class DirectedGraph:
             self.adj_matrix[i].append(0)
 
         # add new row to the end of the adjacency list
-        self.adj_matrix.append([0 for _ in range(self.v_count)])
+        self.adj_matrix.append([0] * self.v_count)
 
         # return the number of vertices in the graph after addition
         return self.v_count

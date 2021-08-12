@@ -58,18 +58,16 @@ class UndirectedGraph:
         # if u and v refer to the same vertex the method does nothing
         if u == v: return
 
-        # if either or both vertex names do not exist in the graph create them
-        if not (u in self.adj_list and v in self.adj_list):
-            # if u is not in the graph then create it and if v is not in the graph then create it
-            for vertex in (u, v):
-                if vertex not in self.adj_list:
-                    self.add_vertex(vertex)
-        # if an edge already exists in the graph the method does nothing
-        elif v in self.adj_list[u] and u in self.adj_list[v]: return
+        # adds both vertices to the graph
+        self.add_vertex(u)
+        self.add_vertex(v)
 
-        # otherwise update the list of vertices connected to the key (either u or v)
-        self.adj_list[v].append(u)
-        self.adj_list[u].append(v)
+        # if an edge already exists in the graph the method does nothing
+        # update the list of vertices connected to the key (either u or v)
+        if u not in self.adj_list[v]:
+            self.adj_list[v].append(u)
+        if v not in self.adj_list[u]:
+            self.adj_list[u].append(v)
 
     def remove_edge(self, v: str, u: str) -> None:
         """
@@ -91,19 +89,15 @@ class UndirectedGraph:
         if v not in self.adj_list: return
         # remove any reference of the parameter vertex from the adj list
         for successor in self.adj_list[v]:
-            self.adj_list[successor].remove(v)
+            self.remove_edge(successor, v)
         self.adj_list.pop(v)
 
     def get_vertices(self) -> []:
         """
         Return list of vertices in the graph (any order)
         """
-        vertices_list = []
         # for every vertex in the adjacency list add it to the return list
-        for i in self.adj_list:
-            vertices_list.append(i)
-
-        return vertices_list
+        return list(self.adj_list.keys())
 
     def get_edges(self) -> []:
         """
@@ -206,32 +200,18 @@ class UndirectedGraph:
         Return number of connected components in the graph
         """
         count = 0   # initialize count to zero
-        visited_vertices = set()   # keep a set of visited vertices
-        stack = deque()     # initialize an empty stack
+        vertices = self.get_vertices()  # get a list of all the vertices in the graph
 
-        # if the number of nodes is greater than zero
-        if len(self.adj_list) > 0:
-            # append the first key value the the stack
-            stack.append(next(iter(self.adj_list.items()))[0])
-
-        # while the stack is empty
-        while len(stack) > 0:
-            pop = stack.pop()  # pop the value in the stack
-            dfs = self.dfs(pop)     # get a list of all the connected vertices
-
-            # for each vertex in this connected component add it to the visited vertices set
-            for vertex in dfs:
-                visited_vertices.add(vertex)
-
-            # for each vertex in the graph
-            for vertex in self.adj_list:
-                # if the vertex has not yet been visited append it to the stack
-                if vertex not in visited_vertices:
-                    stack.append(vertex)
-                    break
-
-            count += 1   # increment count since we just discovered a connected component in the graph
-
+        # while we have yet to visit every vertex
+        while vertices:
+            # use dfs to return all connected vertices of some vertex in the graph
+            found = self.dfs(vertices.pop())
+            # remove all the vertices found
+            for i in found:
+                if i in vertices:
+                    vertices.remove(i)
+            # increment count
+            count += 1
         return count
 
     def has_cycle(self):
